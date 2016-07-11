@@ -1,5 +1,6 @@
 from lxml import html
 from bs4 import BeautifulSoup
+from six.moves.html_parser import HTMLParser
 from collections import defaultdict
 import requests
 
@@ -43,13 +44,14 @@ class Crawler:
             markup = 'xml'
         elif 'html' in content_type:
             markup = 'html'
-
+            
         return markup
 
 class Feed:
     # Class to handle Feeds
     def __init__(self, data, markup):
         self.obj = BeautifulSoup(data, markup)
+        self.html_parser = HTMLParser()
 
     def getFeeds(self):
         # instantiate
@@ -79,10 +81,11 @@ class Feed:
 
         for item in items:
             new_item = {
-                'title': item.title.string,
+                'title': self.html_parser.unescape( item.title.string ),
                 'link': item.find("link").string,
                 'comments_link': item.find("comments"),
-                'publication_date': item.find('pubDate').text
+                'publication_date': item.find('pubDate').text,
+                'author': self.html_parser.unescape( item.find('creator').text )
             }
             data.append(new_item)
 
@@ -90,4 +93,4 @@ class Feed:
 
 
 crawler = Crawler("https://techcrunch.com")
-crawler.crawl()
+res = crawler.crawl()
