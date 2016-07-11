@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from six.moves.html_parser import HTMLParser
 from collections import defaultdict
 import requests
+import argparse
 
 class Crawler:
     def __init__(self, url):
@@ -44,7 +45,7 @@ class Crawler:
             markup = 'xml'
         elif 'html' in content_type:
             markup = 'html'
-            
+
         return markup
 
 class Feed:
@@ -91,6 +92,11 @@ class Feed:
 
         return data
 
+parser = argparse.ArgumentParser()
+parser.add_argument('url', metavar='U', type=str, help="url for the script")
+args = parser.parse_args()
 
-crawler = Crawler("https://techcrunch.com")
+crawler = Crawler(args.url)
 res = crawler.crawl()
+
+print(res)
