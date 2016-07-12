@@ -35,7 +35,7 @@ class Crawler:
             return
 
         # get feeds
-        feeds = Feed(content, markup)
+        feeds = FeedApi(content, markup)
         data = feeds.getFeeds()
 
         return data
@@ -48,7 +48,7 @@ class Crawler:
 
         return markup
 
-class Feed:
+class FeedApi:
     # Class to handle Feeds
     def __init__(self, data, markup):
         self.obj = BeautifulSoup(data, markup)
@@ -92,11 +92,66 @@ class Feed:
 
         return data
 
-parser = argparse.ArgumentParser()
-parser.add_argument('url', metavar='U', type=str, help="url for the script")
+class FeedToDB:
+    def __init__(self, feeds, save_file):
+        self.feeds = feeds
+        self.save_file = save_file
+        # self.dbms = type
+
+    def setupDB(self):
+        # into
+        print "\n====== Database Configuration ======\n"
+
+        # setup type
+        db_type = raw_input("Please select database type: ")
+        accepted_dbs = ['mysql', 'mongodb']
+
+        if db_type in accepted_dbs:
+            print("Yea I am an accepted db " + db_type)
+        else:
+            # add proper error handling
+            print("I am not an accepted db")
+
+    def saveToFile(self):
+        return
+
+
+    # connect to database (future use allow setting of differnet types)
+    # for now connect to mongodb database type=mongodb
+    # setup feed model
+    # write to db
+    # def
+
+# Top Level parser
+parser = argparse.ArgumentParser(prog='RSS-Crawler')
+
+# group arguments for mutually exclusive
+group_1 = parser.add_mutually_exclusive_group(required=True)
+group_1.add_argument('-url', action="store", type=str)
+group_1.add_argument('-file', action="store", type=str)
+
+group_2 = parser.add_mutually_exclusive_group(required=True)
+group_2.add_argument('-database', action="store_true", default=False)
+group_2.add_argument('-export', action="store_false", default=False)
+
 args = parser.parse_args()
 
-crawler = Crawler(args.url)
-res = crawler.crawl()
+if not any(vars(args).values()):
+    # no arguments passed
+    pass
+elif args.url:
+    # option url passed
+    crawler = Crawler(args.url)
+    output = crawler.crawl()
 
-print(res)
+    if args.database:
+        obj = FeedToDB(output, True)
+        obj.setupDB()
+
+    # for now just output to console
+
+    # print(output)
+elif args.file:
+    # read from file
+    # todo: future development
+    pass
