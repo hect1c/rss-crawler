@@ -98,6 +98,10 @@ class FeedToDB:
         self.save_file = save_file
         # self.dbms = type
 
+    def ouput(self):
+        """
+        
+        """
     def setupDB(self):
         # into
         print "\n====== Database Configuration ======\n"
